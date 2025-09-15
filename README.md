@@ -1,4 +1,4 @@
-# Cloud DevOps Automation with Terraform, Jenkins, and Git
+# IaC Automation with Terraform, Jenkins, and Git
 
 This project demonstrates **Infrastructure as Code (IaC) automation** using **Terraform** along with other DevOps tools like **Jenkins** and **Git**.  
 The goal is to automate infrastructure provisioning, configuration, and CI/CD pipelines to enable faster, reliable, and repeatable deployments.
