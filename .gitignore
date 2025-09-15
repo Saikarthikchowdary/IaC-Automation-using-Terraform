@@ -1,0 +1,27 @@
+@'
+# Terraform
+.terraform/
+
+# Terraform state and variable files (sensitive)
+*.tfstate
+*.tfstate.backup
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+
+# Editor / OS files
+.idea/
+.vscode/
+Thumbs.db
+.DS_Store
+
+# Crash logs
+crash.log
+
+# Keys / certificates
+*.pem
+*.key
+'@ | Set-Content -Encoding UTF8 .gitignore
+
