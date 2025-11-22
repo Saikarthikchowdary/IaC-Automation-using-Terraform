@@ -7,14 +7,6 @@ pipeline {
 
     stages {
 
-        stage('Checkout Code') {
-            steps {
-                git branch: 'main',
-                    url: 'https://github.com/Saikarthikchowdary/IaC-Automation-using-Terraform.git',
-                    credentialsId: 'github-token'
-            }
-        }
-
         stage('Terraform Init') {
             steps {
                 withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
@@ -32,7 +24,7 @@ pipeline {
         stage('Terraform Plan') {
             steps {
                 withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
-                    sh 'terraform plan -input=false -out=tfplan'
+                    sh 'terraform plan -input=false -out=tfplan -var-file="terraform.tfvars"'
                 }
             }
         }
@@ -44,14 +36,28 @@ pipeline {
                 }
             }
         }
+
+        stage('Destroy Approval') {
+            steps {
+                input message: "Do you want to destroy the infrastructure?"
+            }
+        }
+
+        stage('Terraform Destroy') {
+            steps {
+                withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
+                    sh 'terraform destroy -auto-approve'
+                }
+            }
+        }
     }
 
     post {
         success {
-            echo '✅ Terraform applied successfully!'
+            echo "✅ Pipeline completed"
         }
         failure {
-            echo '❌ Pipeline failed. Check logs.'
+            echo "❌ Pipeline failed"
         }
     }
 }
