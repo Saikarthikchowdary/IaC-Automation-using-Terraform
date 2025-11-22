@@ -61,7 +61,7 @@ module "sg" {
   }
 }
 
-#automation testing for pipleine retest
+#automation testing webhooks
 #EC2
 module "ec2_instance" {
   source = "terraform-aws-modules/ec2-instance/aws"
