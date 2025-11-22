@@ -61,7 +61,7 @@ module "sg" {
   }
 }
 
-#automation testing
+#automation testing for pipleine
 #EC2
 module "ec2_instance" {
   source = "terraform-aws-modules/ec2-instance/aws"
