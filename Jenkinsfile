@@ -10,21 +10,21 @@ pipeline {
         stage('Terraform Init') {
             steps {
                 withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
-                    sh 'terraform init -input=false'
+                    bat 'terraform init -input=false'
                 }
             }
         }
 
         stage('Terraform Validate') {
             steps {
-                sh 'terraform validate'
+                bat 'terraform validate'
             }
         }
 
         stage('Terraform Plan') {
             steps {
                 withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
-                    sh 'terraform plan -input=false -out=tfplan -var-file="terraform.tfvars"'
+                    bat 'terraform plan -input=false -out=tfplan -var-file="terraform.tfvars"'
                 }
             }
         }
@@ -32,7 +32,7 @@ pipeline {
         stage('Terraform Apply') {
             steps {
                 withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
-                    sh 'terraform apply -input=false -auto-approve tfplan'
+                    bat 'terraform apply -input=false -auto-approve tfplan'
                 }
             }
         }
