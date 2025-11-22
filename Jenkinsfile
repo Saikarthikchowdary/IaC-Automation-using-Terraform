@@ -37,13 +37,4 @@ pipeline {
             }
         }
     }
-
-    post {
-        success {
-            echo '✅ Terraform applied everything successfully!'
-        }
-        failure {
-            echo '❌ Something went wrong. Check Jenkins logs.'
-        }
-    }
 }
