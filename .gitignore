@@ -10,6 +10,9 @@
 override.tf
 override.tf.json
 *_override.tf
+tfplan
+*.tfplan
+.terraform/
 
 # Editor / OS files
 .idea/
