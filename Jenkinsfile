@@ -1,63 +1,61 @@
 pipeline {
     agent any
 
-    environment {
-        AWS_REGION = 'ap-south-1'
-    }
-        // hello world
     stages {
 
-        stage('Terraform Init') {
+        stage('Checkout') {
             steps {
-                withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
-                    sh 'terraform init -input=false -upgrade'
-                }
+                checkout scm
             }
         }
 
-        stage('Terraform Validate') {
+        stage('Terraform Init') {
             steps {
-                sh 'terraform validate'
+                script {
+                    docker.image('hashicorp/terraform:1.5').inside {
+                        dir('terraform') {
+                            sh 'terraform init'
+                        }
+                    }
+                }
             }
         }
 
         stage('Terraform Plan') {
             steps {
-                withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
-                    sh 'terraform plan -input=false -out=tfplan -var-file="terraform.tfvars"'
+                script {
+                    docker.image('hashicorp/terraform:1.5').inside {
+                        dir('terraform') {
+                            sh 'terraform plan -out=tfplan'
+                        }
+                    }
                 }
             }
         }
 
         stage('Terraform Apply') {
             steps {
-                withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
-                    sh 'terraform apply -input=false -auto-approve tfplan'
+                script {
+                    docker.image('hashicorp/terraform:1.5').inside {
+                        dir('terraform') {
+                            sh 'terraform apply -auto-approve tfplan'
+                        }
+                    }
                 }
             }
         }
 
-        stage('Destroy Approval') {
+        stage('Destroy (Manual Approval)') {
             steps {
-                input message: "Do you want to destroy the infrastructure?"
-            }
-        }
-
-        stage('Terraform Destroy') {
-            steps {
-                withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
-                    sh 'terraform destroy -auto-approve'
+                input message: 'Approve destroy?'
+                script {
+                    docker.image('hashicorp/terraform:1.5').inside {
+                        dir('terraform') {
+                            sh 'terraform destroy -auto-approve'
+                        }
+                    }
                 }
             }
-        }
-    }
-
-    post {
-        success {
-            echo "✅ Pipeline completed"
-        }
-        failure {
-            echo "❌ Pipeline failed"
         }
     }
 }
