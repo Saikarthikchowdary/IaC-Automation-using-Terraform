@@ -5,8 +5,7 @@
 # Terraform state and variable files (sensitive)
 *.tfstate
 *.tfstate.backup
-*.tfvars
-*.tfvars.json
+
 override.tf
 override.tf.json
 *_override.tf
