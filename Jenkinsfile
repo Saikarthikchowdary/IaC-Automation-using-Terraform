@@ -12,7 +12,7 @@ pipeline {
         stage('Terraform Init') {
             steps {
                 script {
-                    docker.image('hashicorp/terraform:1.5').inside {
+                    docker.image('hashicorp/terraform:1.5').inside('--entrypoint=""') {
                         dir('terraform') {
                             sh 'terraform init'
                         }
@@ -24,7 +24,7 @@ pipeline {
         stage('Terraform Plan') {
             steps {
                 script {
-                    docker.image('hashicorp/terraform:1.5').inside {
+                    docker.image('hashicorp/terraform:1.5').inside('--entrypoint=""') {
                         dir('terraform') {
                             sh 'terraform plan -out=tfplan'
                         }
@@ -36,7 +36,7 @@ pipeline {
         stage('Terraform Apply') {
             steps {
                 script {
-                    docker.image('hashicorp/terraform:1.5').inside {
+                    docker.image('hashicorp/terraform:1.5').inside('--entrypoint=""') {
                         dir('terraform') {
                             sh 'terraform apply -auto-approve tfplan'
                         }
@@ -49,7 +49,7 @@ pipeline {
             steps {
                 input message: 'Approve destroy?'
                 script {
-                    docker.image('hashicorp/terraform:1.5').inside {
+                    docker.image('hashicorp/terraform:1.5').inside('--entrypoint=""') {
                         dir('terraform') {
                             sh 'terraform destroy -auto-approve'
                         }
