@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    parameters {
+        booleanParam(name: 'DESTROY', defaultValue: false, description: 'Destroy Infrastructure')
+    }
+
     stages {
 
         stage('Checkout') {
@@ -11,49 +15,41 @@ pipeline {
 
         stage('Terraform Init') {
             steps {
-                script {
-                    docker.image('hashicorp/terraform:1.5').inside('--entrypoint=""') {
-                        dir('terraform') {
-                            sh 'terraform init'
-                        }
-                    }
+                dir('terraform') {
+                    sh 'terraform init'
                 }
             }
         }
 
         stage('Terraform Plan') {
+            when {
+                expression { params.DESTROY == false }
+            }
             steps {
-                script {
-                    docker.image('hashicorp/terraform:1.5').inside('--entrypoint=""') {
-                        dir('terraform') {
-                            sh 'terraform plan -out=tfplan'
-                        }
-                    }
+                dir('terraform') {
+                    sh 'terraform plan -out=tfplan'
                 }
             }
         }
 
         stage('Terraform Apply') {
+            when {
+                expression { params.DESTROY == false }
+            }
             steps {
-                script {
-                    docker.image('hashicorp/terraform:1.5').inside('--entrypoint=""') {
-                        dir('terraform') {
-                            sh 'terraform apply -auto-approve tfplan'
-                        }
-                    }
+                dir('terraform') {
+                    sh 'terraform apply -auto-approve tfplan'
                 }
             }
         }
 
-        stage('Destroy (Manual Approval)') {
+        stage('Terraform Destroy') {
+            when {
+                expression { params.DESTROY == true }
+            }
             steps {
-                input message: 'Approve destroy?'
-                script {
-                    docker.image('hashicorp/terraform:1.5').inside('--entrypoint=""') {
-                        dir('terraform') {
-                            sh 'terraform destroy -auto-approve'
-                        }
-                    }
+                dir('terraform') {
+                    sh 'terraform destroy -auto-approve'
                 }
             }
         }
